@@ -10,11 +10,12 @@ const EmployeeRegister = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const EMPLOYEE_SECRET = "EMP2025";
+  const EMPLOYEE_SECRET = "a";
 
   const submit = async (e) => {
     e.preventDefault();
 
+    
     if (empKey !== EMPLOYEE_SECRET)
       return alert("Invalid Employee Key");
 

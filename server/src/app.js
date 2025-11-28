@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import leaveRoutes from './routes/leaveRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
+import debugRoutes from './routes/debugRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import path from "path";
 import { fileURLToPath } from "url";
@@ -38,6 +39,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/debug', debugRoutes);
 
 // Error Middlewares MUST be last
 app.use(notFound);

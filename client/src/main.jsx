@@ -20,17 +20,12 @@ import EmployeeLogin from "./pages/EmployeeLogin";
 import EmployeeRegister from "./pages/EmployeeRegister";
 import AdminLogin from "./pages/AdminLogin";
 import AdminRegister from "./pages/AdminRegister";
-
-// import LoginPage from './pages/LoginPage';
-// import RegisterPage from './pages/RegisterPage';
-// import EmployeeDashboard from './pages/EmployeeDashboard';
-
-// import AdminDashboard from './pages/AdminDashboard';
-// import AttendancePage from './pages/AttendancePage';
-// import LeavePage from './pages/LeavePage';
-// import AdminAttendancePage from './pages/AdminAttendancePage';
-// import AdminLeavePage from './pages/AdminLeavePage';
-// import ProtectedRoute from './routes/ProtectedRoute';
+import ProtectedRoute from './routes/ProtectedRoute';
+import EmployeeDashboard from './pages/EmployeeDashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import EmployeeLeaves from './pages/EmployeeLeaves';
+import AdminLeaves from './pages/AdminLeaves';
+import EmployeeAttendance from './pages/EmployeeAttendance';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthProvider>
@@ -45,12 +40,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 <Route path="/admin/login" element={<AdminLogin />} />
 <Route path="/admin/register" element={<AdminRegister />} />
 
-{/* 
-        Auth
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+
+       
 
         
+    
         <Route
           path="/employee"
           element={
@@ -59,24 +53,25 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/employee/attendance"
-          element={
-            <ProtectedRoute allowedRoles={['employee']}>
-              <AttendancePage />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/employee/leaves"
           element={
-            <ProtectedRoute allowedRoles={['employee']}>
-              <LeavePage />
+            <ProtectedRoute allowedRoles={["employee"]}>
+              <EmployeeLeaves />
             </ProtectedRoute>
           }
         />
 
-       
+        <Route
+          path="/employee/attendance"
+          element={
+            <ProtectedRoute allowedRoles={["employee"]}>
+              <EmployeeAttendance />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin"
           element={
@@ -85,22 +80,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin/attendance"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminAttendancePage />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/admin/leaves"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminLeavePage />
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLeaves />
             </ProtectedRoute>
           }
-        /> */}
+        />
 
       </Routes>
     </BrowserRouter>

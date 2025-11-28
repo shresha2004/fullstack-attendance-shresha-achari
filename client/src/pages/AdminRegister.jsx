@@ -13,7 +13,7 @@ const AdminRegister = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const ADMIN_SECRET = "ADMIN2025";
+  const ADMIN_SECRET = "a";
 
   const submit = async (e) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ const AdminRegister = () => {
         password,
         role: "admin",
       });
-
+     
       login(res.data);
       navigate("/admin");
     } catch (err) {

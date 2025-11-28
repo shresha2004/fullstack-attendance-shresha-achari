@@ -23,16 +23,32 @@ export const getEmployeeStats = async (req, res) => {
     clockInTime: { $exists: true }
   });
 
-  // Simple “leave balance” = total approved leaves this month (or inverse)
+  // Simple "leave balance" = total approved leaves this month (or inverse)
   const approvedLeaves = await Leave.find({
     user: userId,
     status: 'Approved',
     startDate: { $gte: start, $lt: end }
   });
 
+  // Calculate total approved leave days
+  let totalApprovedLeaveDays = 0;
+  approvedLeaves.forEach((leave) => {
+    const leaveStart = new Date(leave.startDate);
+    const leaveEnd = new Date(leave.endDate);
+    const diffTime = leaveEnd - leaveStart;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    totalApprovedLeaveDays += diffDays;
+  });
+
+  // Assuming 20 working days per month
+  const totalWorkingDaysInMonth = 20;
+  const leaveBalance = totalWorkingDaysInMonth - totalApprovedLeaveDays;
+
   res.json({
     daysWorkedThisMonth: daysWorked,
-    approvedLeavesThisMonth: approvedLeaves.length
+    approvedLeavesThisMonth: approvedLeaves.length,
+    totalApprovedLeaveDays,
+    leaveBalance
   });
 };
 
@@ -50,7 +66,11 @@ export const getAdminStats = async (req, res) => {
 
   const absentToday = allEmployees.filter((e) => !presentIds.has(String(e._id)));
 
+  // pending leaves count
+  const pendingLeavesCount = await Leave.countDocuments({ status: 'Pending' });
+
   res.json({
-    absentToday
+    absentToday,
+    pendingLeavesCount
   });
 };

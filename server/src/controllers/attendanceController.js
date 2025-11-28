@@ -7,57 +7,69 @@ const getStartOfDay = (date = new Date()) => {
 };
 
 export const clockIn = async (req, res) => {
-  const userId = req.user._id;
-  const today = getStartOfDay();
+  try {
+    console.log('[clockIn] user:', req.user?._id);
+    const userId = req.user._id;
+    const today = getStartOfDay();
 
-  const existing = await Attendance.findOne({
-    user: userId,
-    date: today,
-    clockOutTime: { $exists: false }
-  });
-
-  if (existing) {
-    return res.status(400).json({ message: 'Already clocked in' });
-  }
-
-  // create or update today record
-  let attendance = await Attendance.findOne({ user: userId, date: today });
-  if (!attendance) {
-    attendance = await Attendance.create({
+    const existing = await Attendance.findOne({
       user: userId,
       date: today,
-      clockInTime: new Date()
+      clockOutTime: { $exists: false }
     });
-  } else {
-    if (attendance.clockInTime) {
-      return res.status(400).json({ message: 'Already clocked in today' });
-    }
-    attendance.clockInTime = new Date();
-    await attendance.save();
-  }
 
-  res.status(201).json(attendance);
+    if (existing) {
+      return res.status(400).json({ message: 'Already clocked in' });
+    }
+
+    // create or update today record
+    let attendance = await Attendance.findOne({ user: userId, date: today });
+    if (!attendance) {
+      attendance = await Attendance.create({
+        user: userId,
+        date: today,
+        clockInTime: new Date()
+      });
+    } else {
+      if (attendance.clockInTime) {
+        return res.status(400).json({ message: 'Already clocked in today' });
+      }
+      attendance.clockInTime = new Date();
+      await attendance.save();
+    }
+
+    res.status(201).json(attendance);
+  } catch (err) {
+    console.error('[clockIn] error:', err);
+    return res.status(500).json({ message: err.message || 'Server error' });
+  }
 };
 
 export const clockOut = async (req, res) => {
-  const userId = req.user._id;
-  const today = getStartOfDay();
+  try {
+    console.log('[clockOut] user:', req.user?._id);
+    const userId = req.user._id;
+    const today = getStartOfDay();
 
-  const attendance = await Attendance.findOne({
-    user: userId,
-    date: today,
-    clockInTime: { $exists: true },
-    clockOutTime: { $exists: false }
-  });
+    const attendance = await Attendance.findOne({
+      user: userId,
+      date: today,
+      clockInTime: { $exists: true },
+      clockOutTime: { $exists: false }
+    });
 
-  if (!attendance) {
-    return res.status(400).json({ message: 'No open clock-in found' });
+    if (!attendance) {
+      return res.status(400).json({ message: 'No open clock-in found' });
+    }
+
+    attendance.clockOutTime = new Date();
+    await attendance.save();
+
+    res.json(attendance);
+  } catch (err) {
+    console.error('[clockOut] error:', err);
+    return res.status(500).json({ message: err.message || 'Server error' });
   }
-
-  attendance.clockOutTime = new Date();
-  await attendance.save();
-
-  res.json(attendance);
 };
 
 // Employee: own logs; Admin: filter
