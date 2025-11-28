@@ -17,6 +17,7 @@ import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import EmployeeDashboard from './pages/EmployeeDashboard';
+
 //import AdminDashboard from './pages/AdminDashboard';
 //import AttendancePage from './pages/AttendancePage';
 //import LeavePage from './pages/LeavePage';
