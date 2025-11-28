@@ -1,4 +1,5 @@
 import Attendance from '../models/Attendance.js';
+import User from '../models/User.js';
 
 const getStartOfDay = (date = new Date()) => {
   const d = new Date(date);
@@ -103,8 +104,17 @@ export const getAllAttendance = async (req, res) => {
   }
 
   const logs = await Attendance.find(filter)
-    .populate('user', 'email role')
+    .populate('user', 'email role name employeeId')
     .sort({ date: -1 });
 
   res.json(logs);
+};
+
+export const getEmployees = async (req, res) => {
+  try {
+    const employees = await User.find({ role: 'employee' }).select('_id name email employeeId role');
+    res.json(employees);
+  } catch (err) {
+    res.status(500).json({ message: err.message || 'Server error' });
+  }
 };

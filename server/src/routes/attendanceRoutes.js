@@ -3,7 +3,8 @@ import {
   clockIn,
   clockOut,
   getMyAttendance,
-  getAllAttendance
+  getAllAttendance,
+  getEmployees
 } from '../controllers/attendanceController.js';
 import { protect, requireRole } from '../middleware/authMiddleware.js';
 
@@ -16,6 +17,7 @@ router.post('/clock-out', protect, clockOut);
 router.get('/me', protect, getMyAttendance);
 
 // admin
+router.get('/employees', protect, requireRole('admin'), getEmployees);
 router.get('/', protect, requireRole('admin'), getAllAttendance);
 
 export default router;
