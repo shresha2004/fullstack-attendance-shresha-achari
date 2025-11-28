@@ -4,36 +4,41 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const EmployeeLogin = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrId, setEmailOrId] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { emailOrId, password });
       if (res.data.user.role !== "employee")
-        return alert("Not an employee account");
+        return setError("Not an employee account");
 
       login(res.data);
       navigate("/employee");
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
       <form onSubmit={submit} className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Employee Login</h2>
+        <h2 className="text-2xl font-bold mb-2 text-center">Employee Login</h2>
+        <p className="text-sm text-center text-gray-600 mb-4">Use your email or Employee ID (EMP-XXXXX)</p>
+
+        {error && <div className="mb-3 text-sm text-red-700 bg-red-50 p-2 rounded">{error}</div>}
 
         <input
-          type="email"
-          placeholder="Email"
+          type="text"
+          placeholder="Email or Employee ID"
           className="w-full border p-3 rounded mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={emailOrId}
+          onChange={(e) => setEmailOrId(e.target.value)}
         />
 
         <input

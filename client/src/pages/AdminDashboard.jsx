@@ -1,12 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosClient';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copiedId, setCopiedId] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const copyToClipboard = () => {
+    if (user?.employeeId) {
+      navigator.clipboard.writeText(user.employeeId);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
 
   const fetchStats = async () => {
     setLoading(true);
@@ -34,11 +45,52 @@ const AdminDashboard = () => {
         <h2 className="text-2xl font-semibold">Admin Dashboard</h2>
         <div className="flex gap-2">
           <button onClick={fetchStats} className="px-3 py-1 border rounded">Refresh</button>
+          <button onClick={() => navigate('/admin/attendance')} className="px-3 py-1 bg-blue-600 text-white rounded">View Attendance</button>
           <button onClick={() => navigate('/admin/leaves')} className="px-3 py-1 bg-green-600 text-white rounded">Review Leaves</button>
         </div>
       </div>
 
       {error && <div className="mb-3 text-sm text-red-700 bg-red-50 p-2 rounded">{error}</div>}
+
+      {/* Profile Card */}
+      {user && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Admin ID</h3>
+              <div className="flex items-center gap-2">
+                <div className="text-2xl font-bold text-red-700">{user.employeeId}</div>
+                <button
+                  onClick={copyToClipboard}
+                  className="px-2 py-1 text-xs bg-white border border-red-300 rounded hover:bg-red-50"
+                  title="Copy ID to clipboard"
+                >
+                  {copiedId ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Name</h3>
+              <p className="text-lg text-gray-800">{user.name}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Email</h3>
+              <p className="text-lg text-gray-800">{user.email}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Role</h3>
+              <p className="text-lg font-semibold">
+                <span className="px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
+                  Administrator
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="p-4 border rounded">

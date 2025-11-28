@@ -26,6 +26,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import EmployeeLeaves from './pages/EmployeeLeaves';
 import AdminLeaves from './pages/AdminLeaves';
 import EmployeeAttendance from './pages/EmployeeAttendance';
+import AdminAttendance from './pages/AdminAttendance';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthProvider>
@@ -86,6 +87,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <AdminLeaves />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/attendance"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminAttendance />
             </ProtectedRoute>
           }
         />

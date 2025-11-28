@@ -10,9 +10,18 @@ const EmployeeDashboard = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
   const [showToken, setShowToken] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
 
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+
+  const copyToClipboard = () => {
+    if (user?.employeeId) {
+      navigator.clipboard.writeText(user.employeeId);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
 
   const isSameUTCDate = (d1, d2) => {
     const a = new Date(d1);
@@ -87,7 +96,47 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-2">Employee Dashboard</h2>
+      <h2 className="text-xl font-semibold mb-6">Employee Dashboard</h2>
+
+      {/* Profile Card */}
+      {user && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Employee ID</h3>
+              <div className="flex items-center gap-2">
+                <div className="text-2xl font-bold text-blue-700">{user.employeeId}</div>
+                <button
+                  onClick={copyToClipboard}
+                  className="px-2 py-1 text-xs bg-white border border-blue-300 rounded hover:bg-blue-50"
+                  title="Copy ID to clipboard"
+                >
+                  {copiedId ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Name</h3>
+              <p className="text-lg text-gray-800">{user.name}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Email</h3>
+              <p className="text-lg text-gray-800">{user.email}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm text-gray-600 font-medium mb-1">Role</h3>
+              <p className="text-lg font-semibold">
+                <span className={`px-3 py-1 rounded-full text-sm ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                  {user.role === 'admin' ? 'Administrator' : 'Employee'}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && <div className="mb-3 text-sm text-red-700 bg-red-50 p-2 rounded">{error}</div>}
 

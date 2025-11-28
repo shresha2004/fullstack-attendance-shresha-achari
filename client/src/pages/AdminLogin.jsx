@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrId, setEmailOrId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,14 +17,14 @@ const AdminLogin = () => {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
-      setError("Please enter both email and password.");
+    if (!emailOrId || !password) {
+      setError("Please enter both email/admin ID and password.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { emailOrId, password });
 
       if (res.data.user?.role !== "admin") {
         setError("This account does not have admin access.");
@@ -50,7 +50,7 @@ const AdminLogin = () => {
           </div>
 
           <h2 className="text-2xl font-semibold text-center mb-2">Admin Sign In</h2>
-          <p className="text-sm text-center text-gray-500 mb-6">Enter your admin credentials to access the dashboard</p>
+          <p className="text-sm text-center text-gray-500 mb-6">Enter your email or Admin ID (AD-XXXXX)</p>
 
           {error && (
             <div role="alert" className="mb-4 text-sm text-red-700 bg-red-50 p-3 rounded">
@@ -58,14 +58,14 @@ const AdminLogin = () => {
             </div>
           )}
 
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="admin-email">Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="admin-email">Email or Admin ID</label>
           <input
             id="admin-email"
-            type="email"
-            aria-label="Admin email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@company.com"
+            type="text"
+            aria-label="Admin email or ID"
+            value={emailOrId}
+            onChange={(e) => setEmailOrId(e.target.value)}
+            placeholder="you@company.com or AD-XXXXX"
             className="w-full border border-gray-200 rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-green-200"
           />
 
