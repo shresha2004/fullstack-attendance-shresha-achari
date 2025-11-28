@@ -1,6 +1,6 @@
 // import { StrictMode } from 'react'
 // import { createRoot } from 'react-dom/client'
-// import './index.css'
+import './index.css'
 // import App from './App.jsx'
 
 // createRoot(document.getElementById('root')).render(
@@ -9,30 +9,48 @@
 //   </StrictMode>,
 // )
 
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import EmployeeDashboard from './pages/EmployeeDashboard';
 
-//import AdminDashboard from './pages/AdminDashboard';
-//import AttendancePage from './pages/AttendancePage';
-//import LeavePage from './pages/LeavePage';
-//import AdminAttendancePage from './pages/AdminAttendancePage';
-//import AdminLeavePage from './pages/AdminLeavePage';
-//import ProtectedRoute from './routes/ProtectedRoute';
+
+import LandingPage from "./pages/LandingPage";
+import EmployeeLogin from "./pages/EmployeeLogin";
+import EmployeeRegister from "./pages/EmployeeRegister";
+import AdminLogin from "./pages/AdminLogin";
+import AdminRegister from "./pages/AdminRegister";
+
+// import LoginPage from './pages/LoginPage';
+// import RegisterPage from './pages/RegisterPage';
+// import EmployeeDashboard from './pages/EmployeeDashboard';
+
+// import AdminDashboard from './pages/AdminDashboard';
+// import AttendancePage from './pages/AttendancePage';
+// import LeavePage from './pages/LeavePage';
+// import AdminAttendancePage from './pages/AdminAttendancePage';
+// import AdminLeavePage from './pages/AdminLeavePage';
+// import ProtectedRoute from './routes/ProtectedRoute';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+
+       <Route path="/" element={<LandingPage />} />
+
+<Route path="/employee/login" element={<EmployeeLogin />} />
+<Route path="/employee/register" element={<EmployeeRegister />} />
+
+<Route path="/admin/login" element={<AdminLogin />} />
+<Route path="/admin/register" element={<AdminRegister />} />
+
+{/* 
+        Auth
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+        
         <Route
           path="/employee"
           element={
@@ -58,6 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           }
         />
 
+       
         <Route
           path="/admin"
           element={
@@ -81,7 +100,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <AdminLeavePage />
             </ProtectedRoute>
           }
-        />
+        /> */}
+
       </Routes>
     </BrowserRouter>
   </AuthProvider>
