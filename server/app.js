@@ -30,6 +30,11 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Connect to MongoDB
 async function connectDatabase() {
   if (mongoose.connection.readyState === 0) {
@@ -67,7 +72,8 @@ app.get('/health', (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
- res.render("index");});
+  res.render('index');
+});
 
 // Favicon
 app.get('/favicon.ico', (req, res) => res.status(204));
