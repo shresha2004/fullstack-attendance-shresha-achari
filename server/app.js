@@ -67,8 +67,7 @@ app.get('/health', (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Attendance System API', version: '1.0' });
-});
+ res.render("index");});
 
 // Favicon
 app.get('/favicon.ico', (req, res) => res.status(204));
