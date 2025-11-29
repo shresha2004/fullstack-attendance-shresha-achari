@@ -24,10 +24,9 @@
 
 Below is the high-level architecture of the UCUBE.AI Attendance System:
 
-```
+
 ![WhatsApp Image 2025-11-29 at 21 01 31_f47f28c2](https://github.com/user-attachments/assets/590b101b-69be-4d4b-8de8-4cc57aee841e)
 
-```
 
 ### Architecture Components:
 - **Frontend**: React + Vite running on port 5173
