@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,7 @@ const AdminDashboard = () => {
   const [showLeavesModal, setShowLeavesModal] = useState(false);
   const [actioningId, setActioningId] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
+  const vantaRef = useRef(null);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -46,6 +47,51 @@ const AdminDashboard = () => {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    console.log('Vanta useEffect triggered');
+    
+    // Use longer setTimeout to ensure ref is attached and DOM is ready
+    const timer = setTimeout(() => {
+      console.log('After timeout - vantaRef:', vantaRef);
+      console.log('After timeout - vantaRef.current:', vantaRef.current);
+      console.log('After timeout - document.querySelector:', document.querySelector('.fixed.inset-0.z-0'));
+      console.log('window.VANTA:', window.VANTA);
+      console.log('window.VANTA?.BIRDS:', window.VANTA?.BIRDS);
+      
+      // Try using the DOM element directly if ref is null
+      const element = vantaRef.current || document.querySelector('.fixed.inset-0.z-0');
+      console.log('Element to use:', element);
+      
+      if (element && typeof window.VANTA !== 'undefined' && window.VANTA.BIRDS) {
+        console.log('Initializing Vanta BIRDS...');
+        try {
+          const vantaInstance = window.VANTA.BIRDS({
+            el: element,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200,
+            minWidth: 200,
+            scale: 1,
+            scaleMobile: 1,
+            backgroundColor: 0xffffff,
+            color: 0x1e3a8a,
+            colorSecondary: 0x3b82f6
+          });
+          console.log('Vanta BIRDS initialized successfully:', vantaInstance);
+        } catch (error) {
+          console.error('Error initializing Vanta BIRDS:', error);
+        }
+      } else {
+        console.warn('Vanta BIRDS not available. element:', element, 'window.VANTA?.BIRDS:', window.VANTA?.BIRDS);
+      }
+    }, 500);
+    
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   const updateLeaveStatus = async (id, status) => {
     setActioningId(id);
     try {
@@ -62,7 +108,12 @@ const AdminDashboard = () => {
   if (loading) return <PageSpinner />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 p-6">
+    <div className="min-h-screen relative">
+      <div 
+        ref={vantaRef}
+        className="fixed inset-0 -z-10"
+      />
+      <div className="relative z-10 p-6">
       {/* Modal for Review Leaves */}
       {showLeavesModal && (
         <div className="fixed inset-0 backdrop-blur-sm  bg-opacity-20 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -285,6 +336,7 @@ const AdminDashboard = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

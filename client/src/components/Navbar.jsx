@@ -27,7 +27,7 @@ const Navbar = () => {
   const menuItems = isAdminRoute ? adminMenuItems : employeeMenuItems;
 
   return (
-    <nav className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+    <nav className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 relative z-10">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex gap-8">
           {menuItems.map((item) => (

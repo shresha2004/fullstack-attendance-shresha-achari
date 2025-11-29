@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import api from '../api/axiosClient';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ const EmployeeDashboard = () => {
   const [submittingLeave, setSubmittingLeave] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [leaveForm, setLeaveForm] = useState({ startDate: '', endDate: '', reason: '' });
+  const vantaRef = useRef(null);
 
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -54,6 +55,57 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     fetchStatsLogsAndLeaves();
   }, [fetchStatsLogsAndLeaves]);
+
+
+
+  useEffect(() => {
+    console.log('Employee Vanta useEffect triggered');
+    
+    // Use longer setTimeout to ensure ref is attached and DOM is ready
+    const timer = setTimeout(() => {
+      console.log('After timeout - vantaRef:', vantaRef);
+      console.log('After timeout - vantaRef.current:', vantaRef.current);
+      console.log('After timeout - document.querySelector:', document.querySelector('.fixed.inset-0.-z-10'));
+      console.log('window.VANTA:', window.VANTA);
+      console.log('window.VANTA?.BIRDS:', window.VANTA?.BIRDS);
+      
+      // Try using the DOM element directly if ref is null
+      const element = vantaRef.current || document.querySelector('.fixed.inset-0.-z-10');
+      console.log('Element to use:', element);
+      
+      if (element && typeof window.VANTA !== 'undefined' && window.VANTA.BIRDS) {
+        console.log('Initializing Vanta BIRDS in Employee Dashboard...');
+        try {
+          const vantaInstance = window.VANTA.BIRDS({
+           
+             el: vantaRef.current,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200,
+        minWidth: 200,
+        scale: 1,
+        scaleMobile: 1,
+        backgroundColor: 0xf8f9fa,
+        color1: 0x2563eb,
+        color2: 0x1e40af,
+        birdSize: 1.5,
+        wingSpan: 30,
+        quantity: 5,
+          });
+          console.log('Vanta BIRDS initialized successfully in Employee Dashboard:', vantaInstance);
+        } catch (error) {
+          console.error('Error initializing Vanta BIRDS in Employee Dashboard:', error);
+        }
+      } else {
+        console.warn('Vanta BIRDS not available in Employee Dashboard. element:', element, 'window.VANTA?.BIRDS:', window.VANTA?.BIRDS);
+      }
+    }, 500);
+    
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   const todayOpen = logs.find((l) => {
     // open if same day and no clockOutTime
@@ -121,7 +173,12 @@ const EmployeeDashboard = () => {
   if (loading) return <PageSpinner />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6">
+    <div className="min-h-screen relative">
+      <div 
+        ref={vantaRef}
+        className="fixed inset-0 -z-10"
+      > </div>
+      <div className="relative z-10 p-6">
       {/* Modal for Apply Leave */}
       {showLeaveModal && (
         <div className="fixed inset-0 backdrop-blur-sm  bg-opacity-2 flex items-center justify-center z-50 p-4">
@@ -408,6 +465,7 @@ const EmployeeDashboard = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
