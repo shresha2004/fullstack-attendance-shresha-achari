@@ -26,12 +26,14 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
+app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => res.render('index'));
 app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/debug', debugRoutes);
+
 
 // Error handling (must be last)
 app.use(notFound);
