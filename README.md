@@ -22,7 +22,7 @@
 
 ## 🏗️ Architecture Overview
 
-Below is the high-level architecture of the UCUBE.AI Attendance System:
+Below is the  architecture of the UCUBE.AI Attendance System:
 
 
 ![WhatsApp Image 2025-11-29 at 21 01 31_f47f28c2](https://github.com/user-attachments/assets/590b101b-69be-4d4b-8de8-4cc57aee841e)
@@ -41,10 +41,10 @@ Below is the high-level architecture of the UCUBE.AI Attendance System:
 
 ### Entity Relationship Diagram
 
-```
+
 ![WhatsApp Image 2025-11-29 at 21 01 31_f47f28c2](https://github.com/user-attachments/assets/050b3039-b2bc-4e1a-bd54-f9f1fcbde94e)
 
-```
+
 
 ### Core Collections:
 
@@ -69,87 +69,86 @@ Below is the high-level architecture of the UCUBE.AI Attendance System:
 ## 📸 Screenshots
 
 ### 1. Landing Page
-```
+
 <img width="1900" height="910" alt="image" src="https://github.com/user-attachments/assets/335552fb-01bf-4262-935e-bac3020fa92b" />
 
-```
+
 Clean entry point with employee and admin login/register options with animated background.
 
 ### 2. Employee Dashboard
-```
+
 <img width="1898" height="909" alt="image" src="https://github.com/user-attachments/assets/79688d28-47b2-4737-b53c-f2b7e9877ab3" />
 
-```
+
 Main hub showing today's clock-in/out status, monthly statistics, and leave balance.
 
 ### 3. Admin Dashboard
-```
+
 <img width="1899" height="909" alt="image" src="https://github.com/user-attachments/assets/59b891e5-11a1-4bdc-a7b2-51718b96d952" />
 
-```
+
 Overview of absent employees today, pending leave applications, and employee management.
 
 ### 4. Employee Login Modal
-```
+
 <img width="1900" height="914" alt="image" src="https://github.com/user-attachments/assets/463753e5-f740-4e08-a03d-32099c894951" />
 
-```
+
 Secure login with email/employee ID and password authentication.
 
 ### 5. Admin Login Modal
-```
+
 <img width="1900" height="910" alt="image" src="https://github.com/user-attachments/assets/3a659d7f-f99d-43de-923c-90d50f3cb4f5" />
 
-```
 Admin-only login portal with role-based access control.
 
 ### 6. Employee Registration
-```
+
 <img width="1901" height="910" alt="image" src="https://github.com/user-attachments/assets/45dad617-634c-4ed1-880a-a45a4d97d455" />
 
-```
+
 Employee account creation with employee key verification.
 
 ### 7. Admin Registration
-```
+
 <img width="1902" height="907" alt="image" src="https://github.com/user-attachments/assets/c8db6884-03b0-4154-8dfc-cd4bec00547b" />
 
-```
+
 Admin account creation with admin key verification.
 
 ### 8. Attendance Page (Employee)
-```
+
 <img width="1897" height="911" alt="image" src="https://github.com/user-attachments/assets/4d7a26f4-5c53-4dc2-bcff-94f63a1c0dd2" />
 
-```
+
 Monthly attendance records with filterable clock-in/out logs.
 
 ### 9. Attendance Page (Admin)
-```
+
 <img width="1902" height="909" alt="image" src="https://github.com/user-attachments/assets/7ab01255-0515-4255-b8f3-fd75b357bcbc" />
 
-```
+
 View all employees' attendance, search by employee, filter by date range.
 
 ### 10. Leave Application (Employee)
-```
+
 <img width="1896" height="905" alt="image" src="https://github.com/user-attachments/assets/f0f9c779-ecda-41f3-83b3-a5485a7da022" />
 
-```
+
 Apply for leave with date range and reason, real-time leave balance display.
 
 ### 11. Leave Management (Admin)
-```
+
 <img width="1899" height="912" alt="image" src="https://github.com/user-attachments/assets/a2ea9926-efdc-4fd3-b6b3-9ce030945d34" />
 
-```
+
 View pending leaves with approve/reject functionality and detailed leave history.
 
 ### 12. Employee Leave History
-```
+
 <img width="1898" height="902" alt="image" src="https://github.com/user-attachments/assets/1d405248-f913-419b-810a-569530e9e74e" />
 
-```
+
 Personal leave history with status tracking (Pending/Approved/Rejected).
 
 ---
