@@ -1,1 +1,706 @@
-"# fullstack-attendance-shresha-achari" 
+"# 📊 UCUBE.AI - Attendance Management System
+
+> A modern, full-stack attendance and leave management system built with React, Node.js, Express, and MongoDB.
+
+## 📑 Table of Contents
+
+1. [Architecture Overview](#-architecture-overview)
+2. [Database Schema](#-database-schema)
+3. [Screenshots](#-screenshots)
+4. [Prerequisites](#-prerequisites)
+5. [Installation](#-installation)
+6. [Environment Variables](#-environment-variables)
+7. [API Documentation](#-api-documentation)
+8. [Running the Application](#-running-the-application)
+9. [Features](#-features)
+10. [Tech Stack](#-tech-stack)
+11. [Project Structure](#-project-structure)
+12. [Contributing](#-contributing)
+13. [License](#-license)
+
+---
+
+## 🏗️ Architecture Overview
+
+Below is the high-level architecture of the UCUBE.AI Attendance System:
+
+```
+
+```
+
+### Architecture Components:
+- **Frontend**: React + Vite running on port 5173
+- **Backend**: Express.js API server running on port 5000
+- **Database**: MongoDB Atlas for data persistence
+- **Authentication**: JWT (JSON Web Tokens)
+- **Real-time**: Socket.io ready infrastructure
+
+---
+
+## 📦 Database Schema
+
+### Entity Relationship Diagram
+
+```
+[Paste your database schema/ER diagram here]
+```
+
+### Core Collections:
+
+#### **Users Collection**
+- Stores admin and employee information
+- Auto-generated employee IDs (UCUBE-XXXX format)
+- Password hashing with bcryptjs
+- JWT authentication support
+
+#### **Attendance Collection**
+- Records clock-in and clock-out times
+- UTC timestamp tracking
+- Unique constraint on user + date
+
+#### **Leaves Collection**
+- Leave applications with status (Pending/Approved/Rejected)
+- 5-day per month limit with validation
+- Pending + Approved leaves counting
+
+---
+
+## 📸 Screenshots
+
+### 1. Landing Page
+```
+[Paste Landing Page screenshot here]
+```
+Clean entry point with employee and admin login/register options with animated background.
+
+### 2. Employee Dashboard
+```
+[Paste Employee Dashboard screenshot here]
+```
+Main hub showing today's clock-in/out status, monthly statistics, and leave balance.
+
+### 3. Admin Dashboard
+```
+[Paste Admin Dashboard screenshot here]
+```
+Overview of absent employees today, pending leave applications, and employee management.
+
+### 4. Employee Login Modal
+```
+[Paste Employee Login Modal screenshot here]
+```
+Secure login with email/employee ID and password authentication.
+
+### 5. Admin Login Modal
+```
+[Paste Admin Login Modal screenshot here]
+```
+Admin-only login portal with role-based access control.
+
+### 6. Employee Registration
+```
+[Paste Employee Registration screenshot here]
+```
+Employee account creation with employee key verification.
+
+### 7. Admin Registration
+```
+[Paste Admin Registration screenshot here]
+```
+Admin account creation with admin key verification.
+
+### 8. Attendance Page (Employee)
+```
+[Paste Employee Attendance Page screenshot here]
+```
+Monthly attendance records with filterable clock-in/out logs.
+
+### 9. Attendance Page (Admin)
+```
+[Paste Admin Attendance Page screenshot here]
+```
+View all employees' attendance, search by employee, filter by date range.
+
+### 10. Leave Application (Employee)
+```
+[Paste Employee Leave Application screenshot here]
+```
+Apply for leave with date range and reason, real-time leave balance display.
+
+### 11. Leave Management (Admin)
+```
+[Paste Admin Leave Management screenshot here]
+```
+View pending leaves with approve/reject functionality and detailed leave history.
+
+### 12. Employee Leave History
+```
+[Paste Employee Leave History screenshot here]
+```
+Personal leave history with status tracking (Pending/Approved/Rejected).
+
+---
+
+## ✅ Prerequisites
+
+Before you begin, ensure you have the following installed on your system:
+
+### Required Software:
+- **Node.js**: v16.0.0 or higher
+- **npm**: v7.0.0 or higher
+- **MongoDB**: Local or MongoDB Atlas account
+- **Git**: For version control
+
+### Accounts Needed:
+- **MongoDB Atlas**: Free tier account for database hosting
+- **GitHub**: Optional, for version control
+
+### System Requirements:
+- **RAM**: Minimum 4GB
+- **Storage**: Minimum 500MB free space
+- **Operating System**: Windows, macOS, or Linux
+
+### Verify Installation:
+```bash
+node --version    # Should show v16.0.0 or higher
+npm --version     # Should show v7.0.0 or higher
+git --version     # Should show git version
+```
+
+---
+
+## 🚀 Installation
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/shresha2004/fullstack-attendance-shresha-achari.git
+cd fullstack-attendance-shresha-achari
+```
+
+### Step 2: Backend Setup
+
+```bash
+# Navigate to server directory
+cd server
+
+# Install dependencies
+npm install
+
+# Verify installation
+npm list
+```
+
+**Backend Dependencies:**
+- express: Web framework
+- mongoose: MongoDB ODM
+- jsonwebtoken: Authentication
+- bcryptjs: Password hashing
+- cors: Cross-origin resource sharing
+- dotenv: Environment variables
+- zod: Input validation
+
+### Step 3: Frontend Setup
+
+```bash
+# Navigate to client directory (from root)
+cd client
+
+# Install dependencies
+npm install
+
+# Verify installation
+npm list
+```
+
+**Frontend Dependencies:**
+- react: UI library
+- react-router-dom: Client-side routing
+- axios: HTTP client
+- react-hot-toast: Notifications
+- tailwindcss: CSS framework
+- vite: Build tool
+
+### Step 4: Database Setup
+
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free account or sign in
+3. Create a new cluster
+4. Add IP address to whitelist (0.0.0.0/0 for development)
+5. Create a database user with password
+6. Get the connection string (URI)
+
+---
+
+## 🔑 Environment Variables
+
+### Backend Environment Variables (server/.env)
+
+```env
+# Database Configuration
+MONGO_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_change_this
+JWT_EXPIRES_IN=7d
+
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# CORS Configuration
+CLIENT_URL=http://localhost:5173
+```
+
+### Frontend Environment Variables (client/.env)
+
+```env
+# API Configuration
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Environment Variables Description:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MONGO_URI` | MongoDB connection string | `mongodb+srv://user:pass@cluster.mongodb.net/db` |
+| `JWT_SECRET` | Secret key for JWT signing | `your-secret-key-min-32-chars` |
+| `JWT_EXPIRES_IN` | JWT token expiration time | `7d`, `24h` |
+| `PORT` | Backend server port | `5000` |
+| `NODE_ENV` | Environment type | `development`, `production` |
+| `CLIENT_URL` | Frontend URL for CORS | `http://localhost:5173` |
+| `VITE_API_URL` | Backend API endpoint | `http://localhost:5000/api` |
+
+---
+
+## 📡 API Documentation
+
+### Base URL
+```
+Local: http://localhost:5000/api
+Production: https://your-backend.vercel.app/api
+```
+
+### Authentication
+All protected endpoints require JWT token in header:
+```
+Authorization: Bearer <token>
+```
+
+### API Endpoints
+
+#### **Authentication Routes** (`/api/auth`)
+
+| Method | Endpoint | Description | Body | Status |
+|--------|----------|-------------|------|--------|
+| POST | `/register` | Register new user | `{name, email, password, role}` | 201 |
+| POST | `/login` | User login | `{emailOrId, password}` | 200 |
+
+**Register Example:**
+```bash
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "role": "employee"
+  }'
+```
+
+**Login Example:**
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "emailOrId": "john@example.com",
+    "password": "password123"
+  }'
+```
+
+---
+
+#### **Attendance Routes** (`/api/attendance`)
+
+| Method | Endpoint | Description | Auth | Status |
+|--------|----------|-------------|------|--------|
+| POST | `/clock-in` | Clock in for work | Required | 201 |
+| POST | `/clock-out` | Clock out from work | Required | 200 |
+| GET | `/me` | Get own attendance | Required | 200 |
+| GET | `/` | Get all attendance (Admin) | Admin | 200 |
+| GET | `/employees` | Get all employees (Admin) | Admin | 200 |
+
+**Clock In Example:**
+```bash
+curl -X POST http://localhost:5000/api/attendance/clock-in \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json"
+```
+
+**Get My Attendance:**
+```bash
+curl -X GET "http://localhost:5000/api/attendance/me?month=11&year=2025" \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### **Leave Routes** (`/api/leaves`)
+
+| Method | Endpoint | Description | Auth | Status |
+|--------|----------|-------------|------|--------|
+| POST | `/` | Apply for leave | Required | 201 |
+| GET | `/me` | Get own leaves | Required | 200 |
+| GET | `/` | Get all leaves (Admin) | Admin | 200 |
+| PATCH | `/:id/status` | Update leave status (Admin) | Admin | 200 |
+
+**Apply Leave Example:**
+```bash
+curl -X POST http://localhost:5000/api/leaves \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "startDate": "2025-12-01",
+    "endDate": "2025-12-03",
+    "reason": "Personal work"
+  }'
+```
+
+---
+
+#### **Statistics Routes** (`/api/stats`)
+
+| Method | Endpoint | Description | Auth | Status |
+|--------|----------|-------------|------|--------|
+| GET | `/me` | Get employee stats | Required | 200 |
+| GET | `/admin` | Get admin stats | Admin | 200 |
+
+**Get Employee Stats:**
+```bash
+curl -X GET http://localhost:5000/api/stats/me \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### **Debug Routes** (`/api/debug`)
+
+| Method | Endpoint | Description | Auth | Status |
+|--------|----------|-------------|------|--------|
+| GET | `/me` | Debug user info | Required | 200 |
+
+---
+
+## 🎯 Running the Application
+
+### Local Development
+
+#### Terminal 1: Start Backend
+```bash
+cd server
+npm install
+npm run dev
+```
+Backend runs on `http://localhost:5000`
+
+#### Terminal 2: Start Frontend
+```bash
+cd client
+npm install
+npm run dev
+```
+Frontend runs on `http://localhost:5173`
+
+### Production Build
+
+#### Build Frontend
+```bash
+cd client
+npm run build
+# Creates dist/ folder
+```
+
+#### Build Backend
+```bash
+cd server
+npm start
+# Runs on configured PORT
+```
+
+---
+
+## ✨ Features
+
+### Employee Features
+- ✅ **Clock In/Out**: Real-time attendance tracking
+- ✅ **Attendance History**: View monthly attendance records
+- ✅ **Leave Application**: Apply for leaves with validation
+- ✅ **Leave Balance**: Real-time leave balance tracking (5 days/month limit)
+- ✅ **Leave History**: View approved, pending, and rejected leaves
+- ✅ **Dashboard**: Personal statistics and quick actions
+- ✅ **Profile**: View employee ID and personal information
+
+### Admin Features
+- ✅ **Dashboard**: Overview of absent employees and pending leaves
+- ✅ **Employee Management**: View all employees
+- ✅ **Attendance Tracking**: Monitor all employee attendance
+- ✅ **Leave Approval**: Approve or reject leave applications
+- ✅ **Statistics**: Monthly attendance and leave statistics
+- ✅ **Filter & Search**: Advanced filtering by employee, date range
+
+### General Features
+- ✅ **Authentication**: Secure JWT-based authentication
+- ✅ **Role-Based Access**: Employee and Admin roles
+- ✅ **Input Validation**: Zod schema validation
+- ✅ **Error Handling**: Comprehensive error messages
+- ✅ **Responsive Design**: Works on all devices
+- ✅ **Notifications**: Toast notifications for user feedback
+- ✅ **Dark Mode Support**: Dark theme compatibility
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: React 19.2
+- **Build Tool**: Vite 7.2
+- **Routing**: React Router DOM 7.9
+- **HTTP Client**: Axios 1.13
+- **Styling**: Tailwind CSS 4.1
+- **UI Components**: React Hot Toast 2.6
+- **Animations**: Vanta.js
+
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT (jsonwebtoken)
+- **Password Security**: bcryptjs
+- **Validation**: Zod
+- **CORS**: Express CORS middleware
+- **Environment**: dotenv
+
+### DevOps & Deployment
+- **Version Control**: Git & GitHub
+- **Frontend Deployment**: Vercel
+- **Backend Deployment**: Vercel (Serverless)
+- **Database**: MongoDB Atlas
+
+---
+
+## 📁 Project Structure
+
+```
+fullstack-attendance-shresha-achari/
+│
+├── client/                          # React Frontend
+│   ├── src/
+│   │   ├── pages/                   # Page components
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── EmployeeDashboard.jsx
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── EmployeeLeaves.jsx
+│   │   │   ├── AdminLeaves.jsx
+│   │   │   ├── EmployeeAttendance.jsx
+│   │   │   └── AdminAttendance.jsx
+│   │   ├── components/              # Reusable components
+│   │   │   ├── Header.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Spinner.jsx
+│   │   │   └── Modals/
+│   │   ├── context/                 # React Context
+│   │   │   └── AuthContext.jsx
+│   │   ├── routes/                  # Route components
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── api/                     # API configuration
+│   │   │   └── axiosClient.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   ├── vite.config.js
+│   └── package.json
+│
+├── server/                          # Express Backend
+│   ├── app.js                       # Main entry point
+│   ├── config/
+│   │   └── db.js                    # MongoDB connection
+│   ├── controllers/                 # Route handlers
+│   │   ├── authController.js
+│   │   ├── attendanceController.js
+│   │   ├── leaveController.js
+│   │   ├── statsController.js
+│   │   └── debugController.js
+│   ├── middleware/                  # Express middleware
+│   │   ├── authMiddleware.js
+│   │   └── errorMiddleware.js
+│   ├── models/                      # Mongoose schemas
+│   │   ├── User.js
+│   │   ├── Attendance.js
+│   │   └── Leave.js
+│   ├── routes/                      # Route definitions
+│   │   ├── authRoutes.js
+│   │   ├── attendanceRoutes.js
+│   │   ├── leaveRoutes.js
+│   │   ├── statsRoutes.js
+│   │   └── debugRoutes.js
+│   ├── utils/                       # Utility functions
+│   │   └── generateToken.js
+│   ├── views/                       # EJS templates
+│   │   └── index.ejs
+│   ├── public/                      # Static files
+│   │   └── favicon.ico
+│   ├── vercel.json                  # Vercel config
+│   ├── .env                         # Environment variables
+│   └── package.json
+│
+└── README.md                        # This file
+```
+
+---
+
+## 🔐 Security Features
+
+- ✅ **Password Hashing**: bcryptjs with salt rounds
+- ✅ **JWT Tokens**: Secure token-based authentication
+- ✅ **CORS Configuration**: Restricted origin access
+- ✅ **Input Validation**: Zod schema validation
+- ✅ **MongoDB Injection Prevention**: Mongoose parameterized queries
+- ✅ **Error Handling**: No sensitive data in error messages
+- ✅ **Environment Variables**: Secrets not hardcoded
+
+---
+
+## 📊 Database Models
+
+### User Schema
+```javascript
+{
+  name: String (required),
+  email: String (required, unique),
+  password: String (required, hashed),
+  employeeId: String (auto-generated: UCUBE-XXXX),
+  role: String (enum: ['admin', 'employee']),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Attendance Schema
+```javascript
+{
+  user: ObjectId (ref: User),
+  date: Date (UTC),
+  clockInTime: Date,
+  clockOutTime: Date,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Leave Schema
+```javascript
+{
+  user: ObjectId (ref: User),
+  startDate: Date,
+  endDate: Date,
+  reason: String,
+  status: String (enum: ['Pending', 'Approved', 'Rejected']),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### MongoDB Connection Error
+```
+Error: The `uri` parameter to `openUri()` must be a string
+```
+**Solution**: Check your `.env` file has correct `MONGO_URI`
+
+### CORS Error
+```
+Access to XMLHttpRequest has been blocked by CORS policy
+```
+**Solution**: Ensure `CLIENT_URL` in backend `.env` matches frontend domain
+
+### Port Already in Use
+```
+Error: listen EADDRINUSE: address already in use :::5000
+```
+**Solution**: Kill process or change PORT in `.env`
+
+### Token Expired
+```
+Error: Not authorized, token failed
+```
+**Solution**: Login again to refresh token
+
+---
+
+## 📈 Future Enhancements
+
+- [ ] Email notifications for leave approvals
+- [ ] Real-time notifications with Socket.io
+- [ ] Geolocation-based attendance
+- [ ] Biometric integration
+- [ ] Mobile app (React Native)
+- [ ] Advanced reporting and analytics
+- [ ] Multi-language support
+- [ ] Two-factor authentication
+- [ ] Automated leave carry-over
+- [ ] Performance metrics dashboard
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Shresha Acharya**
+
+- GitHub: [@shresha2004](https://github.com/shresha2004)
+- Repository: [fullstack-attendance-shresha-achari](https://github.com/shresha2004/fullstack-attendance-shresha-achari)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## ⭐ Support
+
+If you found this project helpful, please consider giving it a star! ⭐
+
+---
+
+## 📞 Contact & Support
+
+For issues, questions, or suggestions:
+- Open an issue on [GitHub Issues](https://github.com/shresha2004/fullstack-attendance-shresha-achari/issues)
+- Contact: shresha2004@github.com
+
+---
+
+**Last Updated**: November 29, 2025
+
+**Version**: 1.0.0
+
+---
+
+> Made with ❤️ by Shresha Acharya
