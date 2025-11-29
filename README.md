@@ -45,7 +45,10 @@ Below is the  architecture of the UCUBE.AI Attendance System:
 ![WhatsApp Image 2025-11-29 at 21 01 31_f47f28c2](https://github.com/user-attachments/assets/050b3039-b2bc-4e1a-bd54-f9f1fcbde94e)
 
 
-
+## Deployed link
+```
+https://fullstack-attendance-shresha-achari.vercel.app
+```
 ### Core Collections:
 
 #### **Users Collection**
