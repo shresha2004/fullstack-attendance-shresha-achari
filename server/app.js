@@ -30,19 +30,18 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// View engine setup
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Connect to MongoDB
 async function connectDatabase() {
-  try {
-    await mongoose.connect(MONGO_URI);
-    console.log('Database connected');
-  } catch (err) {
-    console.error('Database connection error:', err);
-    process.exit(1);
+  if (mongoose.connection.readyState === 0) {
+    try {
+      await mongoose.connect(MONGO_URI);
+      console.log('Database connected');
+    } catch (err) {
+      console.error('Database connection error:', err);
+      if (process.env.NODE_ENV !== 'production') {
+        process.exit(1);
+      }
+    }
   }
 }
 
@@ -54,13 +53,22 @@ db.once('open', () => {
   console.log('MongoDB connection established');
 });
 
-// Routes
-app.get('/', (req, res) => res.render('index'));
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/debug', debugRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'Server is running', status: 'ok' });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Attendance System API', version: '1.0' });
+});
 
 // Favicon
 app.get('/favicon.ico', (req, res) => res.status(204));
@@ -69,7 +77,12 @@ app.get('/favicon.ico', (req, res) => res.status(204));
 app.use(notFound);
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start server (for local development)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel
+export default app;
