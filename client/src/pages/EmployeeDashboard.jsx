@@ -126,6 +126,12 @@ const EmployeeDashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/employee/login');
+    toast.success('Logged out successfully');
+  };
+
   const handleSubmitLeave = async (e) => {
     e.preventDefault();
     if (!leaveForm.startDate || !leaveForm.endDate || !leaveForm.reason) {

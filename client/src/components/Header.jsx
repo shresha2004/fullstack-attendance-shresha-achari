@@ -15,7 +15,13 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    if (user?.role === 'admin') {
+      navigate('/admin/login');
+    } else if (user?.role === 'employee') {
+      navigate('/employee/login');
+    } else {
+      navigate('/');
+    }
     toast.success('Logged out successfully');
   };
 

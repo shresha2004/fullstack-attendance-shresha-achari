@@ -21,6 +21,7 @@ import EmployeeLeaves from './pages/EmployeeLeaves';
 import AdminLeaves from './pages/AdminLeaves';
 import EmployeeAttendance from './pages/EmployeeAttendance';
 import AdminAttendance from './pages/AdminAttendance';
+import Forbidden from './pages/Forbidden';
 
 const toastConfig = {
   position: 'top-right',
@@ -105,6 +106,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 </ProtectedRoute>
               }
             />
+            <Route path="*" element={<Forbidden />} />
           </Routes>
         </main>
         <Footer />

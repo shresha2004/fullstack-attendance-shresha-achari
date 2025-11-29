@@ -16,7 +16,7 @@ const AdminDashboard = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const vantaRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const copyToClipboard = () => {
     if (user?.employeeId) {

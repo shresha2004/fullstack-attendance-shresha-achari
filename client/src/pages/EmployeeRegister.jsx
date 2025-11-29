@@ -4,6 +4,7 @@ import api from "../api/axiosClient";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "../components/Spinner";
+import { sendOTPEmail, generateOTP } from "../services/emailService";
 
 const EmployeeRegister = () => {
   const [name, setName] = useState("");
@@ -12,12 +13,39 @@ const EmployeeRegister = () => {
   const [empKey, setEmpKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [registeredEmployeeId, setRegisteredEmployeeId] = useState("");
+  const [copiedId, setCopiedId] = useState(false);
+  const [step, setStep] = useState(1); // 1: form, 2: OTP verification
+  const [otp, setOtp] = useState("");
+  const [generatedOTP, setGeneratedOTP] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const EMPLOYEE_SECRET = import.meta.env.VITE_EMPLOYEE_KEY;
 
-  const submit = async (e) => {
+  const validatePassword = (pwd) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(pwd);
+    const hasLowerCase = /[a-z]/.test(pwd);
+    const hasNumbers = /[0-9]/.test(pwd);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+    
+    if (pwd.length < minLength) return "Password must be at least 8 characters";
+    if (!hasUpperCase) return "Password must contain uppercase letter";
+    if (!hasLowerCase) return "Password must contain lowercase letter";
+    if (!hasNumbers) return "Password must contain a number";
+    if (!hasSpecialChar) return "Password must contain a special character";
+    return null;
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(registeredEmployeeId);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  };
+
+  const sendOTP = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !password || !empKey) {
@@ -25,8 +53,41 @@ const EmployeeRegister = () => {
       return;
     }
 
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      toast.error(passwordError);
+      return;
+    }
+
     if (empKey !== EMPLOYEE_SECRET) {
       toast.error("Invalid Employee Key");
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      const newOTP = generateOTP();
+      setGeneratedOTP(newOTP);
+      
+      const sent = await sendOTPEmail(email, newOTP);
+      if (sent) {
+        toast.success("OTP sent to your email!");
+        setStep(2);
+      } else {
+        toast.error("Failed to send OTP. Please check EmailJS configuration.");
+      }
+    } catch (error) {
+      toast.error("Error sending OTP");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const verifyOTP = async (e) => {
+    e.preventDefault();
+
+    if (otp !== generatedOTP) {
+      toast.error("Invalid OTP");
       return;
     }
 
@@ -49,17 +110,30 @@ const EmployeeRegister = () => {
       }, 2000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
+      setStep(2);
     } finally {
       setLoading(false);
     }
   };
 
-  const [copiedId, setCopiedId] = useState(false);
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(registeredEmployeeId);
-    setCopiedId(true);
-    setTimeout(() => setCopiedId(false), 2000);
+  const resendOTP = async () => {
+    setOtpLoading(true);
+    try {
+      const newOTP = generateOTP();
+      setGeneratedOTP(newOTP);
+      
+      const sent = await sendOTPEmail(email, newOTP);
+      if (sent) {
+        toast.success("OTP resent to your email!");
+        setOtp("");
+      } else {
+        toast.error("Failed to resend OTP");
+      }
+    } catch (error) {
+      toast.error("Error resending OTP");
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   if (registeredEmployeeId) {
@@ -100,7 +174,7 @@ const EmployeeRegister = () => {
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4">
-      <form onSubmit={submit} className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100">
+      <form onSubmit={step === 1 ? sendOTP : verifyOTP} className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100">
         <div className="text-center mb-8">
           <div className="inline-block p-3 bg-blue-100 rounded-full mb-3">
             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,73 +182,130 @@ const EmployeeRegister = () => {
             </svg>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Employee Registration</h2>
-          <p className="text-sm text-gray-600 mt-2">Create your account</p>
+          <p className="text-sm text-gray-600 mt-2">{step === 1 ? 'Create your account' : 'Verify your email'}</p>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+        {step === 1 ? (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={otpLoading}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input
-              type="email"
-              placeholder="john@example.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input
+                type="email"
+                placeholder="john@example.com"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={otpLoading}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={otpLoading}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Employee Key</label>
-            <input
-              type="password"
-              placeholder="Enter employee key"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              value={empKey}
-              onChange={(e) => setEmpKey(e.target.value)}
-              disabled={loading}
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Employee Key</label>
+              <input
+                type="password"
+                placeholder="Enter employee key"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                value={empKey}
+                onChange={(e) => setEmpKey(e.target.value)}
+                disabled={otpLoading}
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <Spinner size="sm" className="text-white" />
-                Registering...
-              </>
-            ) : (
-              'Register'
-            )}
-          </button>
-        </div>
+            <button
+              type="submit"
+              disabled={otpLoading}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {otpLoading ? (
+                <>
+                  <Spinner size="sm" className="text-white" />
+                  Sending OTP...
+                </>
+              ) : (
+                'Continue'
+              )}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 text-center mb-4">
+              We've sent a 6-digit OTP to <span className="font-semibold text-gray-900">{email}</span>
+            </p>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Enter OTP</label>
+              <input
+                type="text"
+                placeholder="000000"
+                maxLength="6"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-center text-2xl tracking-widest font-semibold"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                disabled={loading}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || otp.length !== 6}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" className="text-white" />
+                  Verifying...
+                </>
+              ) : (
+                'Verify & Register'
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={resendOTP}
+              disabled={otpLoading}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {otpLoading ? 'Resending...' : 'Resend OTP'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setStep(1);
+                setOtp("");
+                setGeneratedOTP("");
+              }}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition"
+            >
+              Back
+            </button>
+          </div>
+        )}
 
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{' '}

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   //baseURL: 'http://localhost:5000/api'
-  baseURL: 'https://fullstack-attendance-shresha-achari-tawny.vercel.app/api'
+ baseURL: 'https://fullstack-attendance-shresha-achari-tawny.vercel.app/api'
 });
 
 api.interceptors.request.use((config) => {
