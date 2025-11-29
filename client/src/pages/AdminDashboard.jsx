@@ -48,24 +48,12 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Vanta useEffect triggered');
-    
-    // Use longer setTimeout to ensure ref is attached and DOM is ready
     const timer = setTimeout(() => {
-      console.log('After timeout - vantaRef:', vantaRef);
-      console.log('After timeout - vantaRef.current:', vantaRef.current);
-      console.log('After timeout - document.querySelector:', document.querySelector('.fixed.inset-0.z-0'));
-      console.log('window.VANTA:', window.VANTA);
-      console.log('window.VANTA?.BIRDS:', window.VANTA?.BIRDS);
-      
-      // Try using the DOM element directly if ref is null
       const element = vantaRef.current || document.querySelector('.fixed.inset-0.z-0');
-      console.log('Element to use:', element);
       
       if (element && typeof window.VANTA !== 'undefined' && window.VANTA.BIRDS) {
-        console.log('Initializing Vanta BIRDS...');
         try {
-          const vantaInstance = window.VANTA.BIRDS({
+          window.VANTA.BIRDS({
             el: element,
             mouseControls: true,
             touchControls: true,
@@ -78,18 +66,13 @@ const AdminDashboard = () => {
             color: 0x1e3a8a,
             colorSecondary: 0x3b82f6
           });
-          console.log('Vanta BIRDS initialized successfully:', vantaInstance);
         } catch (error) {
-          console.error('Error initializing Vanta BIRDS:', error);
+          // Vanta initialization failed
         }
-      } else {
-        console.warn('Vanta BIRDS not available. element:', element, 'window.VANTA?.BIRDS:', window.VANTA?.BIRDS);
       }
     }, 500);
     
-    return () => {
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   const updateLeaveStatus = async (id, status) => {
@@ -269,18 +252,7 @@ const AdminDashboard = () => {
             <p className="text-xs text-gray-500 mt-2">Employees</p>
           </div>
 
-          <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600 font-medium">Quick Actions</div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.3A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-3xl font-bold text-gray-900">2</p>
-            <p className="text-xs text-gray-500 mt-2">Available options</p>
-          </div>
+
         </div>
 
         {/* Action Buttons */}

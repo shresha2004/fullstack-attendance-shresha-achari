@@ -121,7 +121,7 @@ const Footer = () => {
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Location</p>
-                <p className="text-sm text-white font-medium">San Francisco, CA 94102</p>
+                <p className="text-sm text-white font-medium">Karnataka, Bengaluru</p>
               </div>
             </div>
           </div>
@@ -132,9 +132,7 @@ const Footer = () => {
           <p className="text-sm text-gray-400">
             © {currentYear} UCUBE.AI. All rights reserved.
           </p>
-          <p className="text-sm text-gray-500 mt-4 md:mt-0">
-            Built with ❤️ for modern enterprises
-          </p>
+  
         </div>
       </div>
     </footer>

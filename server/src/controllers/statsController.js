@@ -8,6 +8,15 @@ const getStartOfDay = (d) => {
   return date;
 };
 
+// Calculate total leave days between two dates (inclusive)
+const calculateLeaveDays = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  return diffDays;
+};
+
 export const getEmployeeStats = async (req, res) => {
   const userId = req.user._id;
   const today = new Date();
@@ -23,7 +32,7 @@ export const getEmployeeStats = async (req, res) => {
     clockInTime: { $exists: true }
   });
 
-  // Simple "leave balance" = total approved leaves this month (or inverse)
+  // Get approved leaves for this month
   const approvedLeaves = await Leave.find({
     user: userId,
     status: 'Approved',
@@ -33,22 +42,36 @@ export const getEmployeeStats = async (req, res) => {
   // Calculate total approved leave days
   let totalApprovedLeaveDays = 0;
   approvedLeaves.forEach((leave) => {
-    const leaveStart = new Date(leave.startDate);
-    const leaveEnd = new Date(leave.endDate);
-    const diffTime = leaveEnd - leaveStart;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    totalApprovedLeaveDays += diffDays;
+    totalApprovedLeaveDays += calculateLeaveDays(leave.startDate, leave.endDate);
   });
 
-  // Assuming 20 working days per month
-  const totalWorkingDaysInMonth = 20;
-  const leaveBalance = totalWorkingDaysInMonth - totalApprovedLeaveDays;
+  // Get pending leaves for this month
+  const pendingLeaves = await Leave.find({
+    user: userId,
+    status: 'Pending',
+    startDate: { $gte: start, $lt: end }
+  });
+
+  // Calculate total pending leave days
+  let totalPendingLeaveDays = 0;
+  pendingLeaves.forEach((leave) => {
+    totalPendingLeaveDays += calculateLeaveDays(leave.startDate, leave.endDate);
+  });
+
+  // Max 5 leaves per month
+  const MAX_LEAVES_PER_MONTH = 5;
+  const totalLeaveDaysUsed = totalApprovedLeaveDays + totalPendingLeaveDays;
+  const leaveBalance = MAX_LEAVES_PER_MONTH - totalLeaveDaysUsed;
 
   res.json({
     daysWorkedThisMonth: daysWorked,
     approvedLeavesThisMonth: approvedLeaves.length,
+    pendingLeavesThisMonth: pendingLeaves.length,
     totalApprovedLeaveDays,
-    leaveBalance
+    totalPendingLeaveDays,
+    totalLeaveDaysUsed,
+    leaveBalance: Math.max(0, leaveBalance),
+    maxLeavesPerMonth: MAX_LEAVES_PER_MONTH
   });
 };
 

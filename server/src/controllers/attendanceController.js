@@ -9,7 +9,6 @@ const getStartOfDay = (date = new Date()) => {
 
 export const clockIn = async (req, res) => {
   try {
-    console.log('[clockIn] user:', req.user?._id);
     const userId = req.user._id;
     const today = getStartOfDay();
 
@@ -23,7 +22,6 @@ export const clockIn = async (req, res) => {
       return res.status(400).json({ message: 'Already clocked in' });
     }
 
-    // create or update today record
     let attendance = await Attendance.findOne({ user: userId, date: today });
     if (!attendance) {
       attendance = await Attendance.create({
@@ -40,15 +38,13 @@ export const clockIn = async (req, res) => {
     }
 
     res.status(201).json(attendance);
-  } catch (err) {
-    console.error('[clockIn] error:', err);
-    return res.status(500).json({ message: err.message || 'Server error' });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Clock in failed' });
   }
 };
 
 export const clockOut = async (req, res) => {
   try {
-    console.log('[clockOut] user:', req.user?._id);
     const userId = req.user._id;
     const today = getStartOfDay();
 
@@ -65,56 +61,62 @@ export const clockOut = async (req, res) => {
 
     attendance.clockOutTime = new Date();
     await attendance.save();
-
     res.json(attendance);
-  } catch (err) {
-    console.error('[clockOut] error:', err);
-    return res.status(500).json({ message: err.message || 'Server error' });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Clock out failed' });
   }
 };
 
-// Employee: own logs; Admin: filter
 export const getMyAttendance = async (req, res) => {
-  const { month, year } = req.query;
-  const filter = { user: req.user._id };
+  try {
+    const { month, year } = req.query;
+    const filter = { user: req.user._id };
 
-  if (month && year) {
-    const m = Number(month) - 1;
-    const y = Number(year);
-    const start = new Date(Date.UTC(y, m, 1));
-    const end = new Date(Date.UTC(y, m + 1, 1));
-    filter.date = { $gte: start, $lt: end };
+    if (month && year) {
+      const m = Number(month) - 1;
+      const y = Number(year);
+      const start = new Date(Date.UTC(y, m, 1));
+      const end = new Date(Date.UTC(y, m + 1, 1));
+      filter.date = { $gte: start, $lt: end };
+    }
+
+    const logs = await Attendance.find(filter).sort({ date: -1 });
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch attendance' });
   }
-
-  const logs = await Attendance.find(filter).sort({ date: -1 });
-  res.json(logs);
 };
 
 export const getAllAttendance = async (req, res) => {
-  const { userId, month, year } = req.query;
-  const filter = {};
-  if (userId) filter.user = userId;
+  try {
+    const { userId, month, year } = req.query;
+    const filter = {};
+    if (userId) filter.user = userId;
 
-  if (month && year) {
-    const m = Number(month) - 1;
-    const y = Number(year);
-    const start = new Date(Date.UTC(y, m, 1));
-    const end = new Date(Date.UTC(y, m + 1, 1));
-    filter.date = { $gte: start, $lt: end };
+    if (month && year) {
+      const m = Number(month) - 1;
+      const y = Number(year);
+      const start = new Date(Date.UTC(y, m, 1));
+      const end = new Date(Date.UTC(y, m + 1, 1));
+      filter.date = { $gte: start, $lt: end };
+    }
+
+    const logs = await Attendance.find(filter)
+      .populate('user', 'email role name employeeId')
+      .sort({ date: -1 });
+
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch attendance' });
   }
-
-  const logs = await Attendance.find(filter)
-    .populate('user', 'email role name employeeId')
-    .sort({ date: -1 });
-
-  res.json(logs);
 };
 
 export const getEmployees = async (req, res) => {
   try {
-    const employees = await User.find({ role: 'employee' }).select('_id name email employeeId role');
+    const employees = await User.find({ role: 'employee' })
+      .select('_id name email employeeId role');
     res.json(employees);
-  } catch (err) {
-    res.status(500).json({ message: err.message || 'Server error' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch employees' });
   }
 };

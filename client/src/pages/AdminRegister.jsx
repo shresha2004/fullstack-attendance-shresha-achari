@@ -19,6 +19,12 @@ const AdminRegister = () => {
 
   const ADMIN_SECRET = import.meta.env.VITE_ADMIN_KEY;
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(registeredAdminId);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  };
+
   const submit = async (e) => {
     e.preventDefault();
 
@@ -45,10 +51,10 @@ const AdminRegister = () => {
       login(res.data);
       toast.success("Admin registration successful!");
 
-      // Navigate after 3 seconds to let user copy the ID
+      // Navigate after 2 seconds to let user see the ID
       setTimeout(() => {
         navigate("/admin");
-      }, 3000);
+      }, 2000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
@@ -56,47 +62,36 @@ const AdminRegister = () => {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(registeredAdminId);
-    setCopiedId(true);
-    setTimeout(() => setCopiedId(false), 2000);
-  };
-
   if (registeredAdminId) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-red-50 via-white to-orange-50 px-4">
-        {/* Modal Popup */}
-        <div className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100">
-            <div className="text-center">
-              <div className="inline-block p-4 bg-red-100 rounded-full mb-4">
-                <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-center border border-gray-100">
+          <div className="inline-block p-4 bg-red-100 rounded-full mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-bold mb-2 text-gray-900">Registration Successful!</h2>
+          <p className="text-gray-600 mb-6">Your Admin ID has been generated</p>
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-xl mb-6 border-2 border-red-200">
+            <p className="text-xs text-gray-600 uppercase tracking-wide mb-3 font-semibold">Admin ID</p>
+            <div className="flex items-center justify-center gap-3">
+              <p className="text-3xl font-bold text-red-700">{registeredAdminId}</p>
+              <button
+                onClick={copyToClipboard}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
-              
-              <div className="bg-red-50 p-4 rounded-lg mb-4 border border-red-200 mt-6">
-                <p className="text-xs text-gray-600 uppercase tracking-wide mb-2 font-semibold">Admin Name</p>
-                <p className="text-lg font-semibold text-gray-900 mb-4">{name}</p>
-                
-                <p className="text-xs text-gray-600 uppercase tracking-wide mb-2 font-semibold">Admin ID</p>
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-2xl font-bold text-red-700">{registeredAdminId}</p>
-                  <button
-                    onClick={copyToClipboard}
-                    className="px-3 py-2 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center gap-1 whitespace-nowrap"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    {copiedId ? 'Copied!' : 'Copy'}
-                  </button>
-                </div>
-              </div>
-              
-              <p className="text-sm text-gray-600 text-center">Redirecting to dashboard in 3 seconds...</p>
+                {copiedId ? 'Copied!' : 'Copy'}
+              </button>
             </div>
+          </div>
+          <p className="text-sm text-gray-600 mb-6">Save this ID for future logins. You can also use your email to login.</p>
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <Spinner size="sm" className="text-blue-600" />
+            <p>Redirecting to dashboard...</p>
           </div>
         </div>
       </div>

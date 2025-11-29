@@ -7,7 +7,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   
-  // Hide header on auth pages only (not on landing)
+ 
   const hideHeaderRoutes = ['/admin/login', '/admin/register', '/employee/login', '/employee/register'];
   if (hideHeaderRoutes.includes(location.pathname)) {
     return null;

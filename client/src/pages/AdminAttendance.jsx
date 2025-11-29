@@ -21,7 +21,7 @@ const AdminAttendance = () => {
       const res = await api.get('/attendance/employees');
       setEmployees(res.data || []);
     } catch (err) {
-      console.error('Failed to fetch employees');
+      // Failed to fetch employees
     }
   };
 
