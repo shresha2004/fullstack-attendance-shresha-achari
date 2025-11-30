@@ -16,8 +16,7 @@
 10. [Features](#-features)
 11. [Tech Stack](#-tech-stack)
 12. [Project Structure](#-project-structure)
-13. [Contributing](#-contributing)
-14. [License](#-license)
+
 
 ---
 
@@ -778,47 +777,3 @@ Error: Not authorized, token failed
 - [ ] Two-factor authentication
 - [ ] Automated leave carry-over
 - [ ] Performance metrics dashboard
-
-
-## 👨‍💻 Author
-
-**Shresha Acharya**
-
-- GitHub: [@shresha2004](https://github.com/shresha2004)
-- Repository: [fullstack-attendance-shresha-achari](https://github.com/shresha2004/fullstack-attendance-shresha-achari)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## ⭐ Support
-
-If you found this project helpful, please consider giving it a star! ⭐
-
----
-
-## 📞 Contact & Support
-
-For issues, questions, or suggestions:
-- Open an issue on [GitHub Issues](https://github.com/shresha2004/fullstack-attendance-shresha-achari/issues)
-- Contact: shresha2004@github.com
-
----
-
-**Last Updated**: November 29, 2025
-
-**Version**: 1.0.0
-
----
-
-> Made with ❤️ by Shresha Acharya
