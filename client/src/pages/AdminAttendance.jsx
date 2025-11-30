@@ -64,7 +64,7 @@ const AdminAttendance = () => {
     const absent = [];
     const presentUserIds = new Set();
 
-    // Find all employees who have attendance records for the selected date
+    // Find all employees who have attendance records for the selected date WITH clockInTime
     logsData.forEach((log) => {
       const logDate = new Date(log.date);
       if (logDate.toDateString() === selectedDateObj.toDateString()) {
@@ -86,8 +86,21 @@ const AdminAttendance = () => {
     });
 
     // Find absent employees (those not in present list)
-    if (employees.length > 0) {
-      employees.forEach((emp) => {
+    if (employees && employees.length > 0) {
+      // Determine which employees to check
+      let employeesToCheck = employees;
+      
+      if (searchQuery) {
+        // If searching, only check matching employees
+        employeesToCheck = employees.filter(emp =>
+          emp.employeeId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          emp.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          emp.email?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      // For each employee, if they don't have a clock-in on the selected date, they're absent
+      employeesToCheck.forEach((emp) => {
         if (!presentUserIds.has(emp._id)) {
           absent.push({
             _id: emp._id,
@@ -108,14 +121,17 @@ const AdminAttendance = () => {
   }, []);
 
   useEffect(() => {
-    fetchAttendance();
-  }, [month, year, searchQuery]);
+    if (employees.length > 0) {
+      fetchAttendance();
+    }
+  }, [month, year, searchQuery, employees]);
 
   useEffect(() => {
-    if (logs.length > 0) {
+    // Recalculate when selected date changes, or when logs/employees change
+    if (logs.length >= 0 && employees.length > 0) {
       calculateTodayAttendance(logs);
     }
-  }, [selectedDate]);
+  }, [selectedDate, logs, employees, searchQuery]);
 
   const groupLogsByUser = () => {
     const grouped = {};

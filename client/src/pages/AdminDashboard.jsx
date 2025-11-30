@@ -328,7 +328,6 @@ const AdminDashboard = () => {
                     <div>
                       <p className="font-semibold text-gray-900 break-all">{e.name || e.email}</p>
                       <p className="text-sm text-gray-600 break-all">{e.email}</p>
-                      <p className="text-xs text-gray-500 mt-1">ID: {e.employeeId}</p>
                     </div>
                     <span className="px-3 py-1 bg-red-200 text-red-700 rounded-full text-xs font-semibold">
                       Absent

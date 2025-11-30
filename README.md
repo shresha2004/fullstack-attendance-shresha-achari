@@ -9,14 +9,15 @@
 3. [Screenshots](#-screenshots)
 4. [Prerequisites](#-prerequisites)
 5. [Installation](#-installation)
-6. [Environment Variables](#-environment-variables)
-7. [API Documentation](#-api-documentation)
-8. [Running the Application](#-running-the-application)
-9. [Features](#-features)
-10. [Tech Stack](#-tech-stack)
-11. [Project Structure](#-project-structure)
-12. [Contributing](#-contributing)
-13. [License](#-license)
+6. [Docker Setup](#-docker-setup)
+7. [Environment Variables](#-environment-variables)
+8. [API Documentation](#-api-documentation)
+9. [Running the Application](#-running-the-application)
+10. [Features](#-features)
+11. [Tech Stack](#-tech-stack)
+12. [Project Structure](#-project-structure)
+13. [Contributing](#-contributing)
+14. [License](#-license)
 
 ---
 
@@ -246,7 +247,93 @@ npm list
 
 ---
 
-## 🔑 Environment Variables
+## 🐳 Docker Setup
+
+### Prerequisites for Docker
+- **Docker**: v20.0 or higher
+- **Docker Compose**: v1.29 or higher
+
+### Running with Docker
+
+#### Build and Run
+```bash
+# From root directory
+docker-compose up --build
+```
+
+This will:
+- Build the frontend image
+- Build the backend image
+- Start MongoDB container
+- Start all services on their respective ports
+
+#### Containers
+- **Frontend**: Running on port 3000
+- **Backend**: Running on port 5000
+- **MongoDB**: Running on port 27017
+
+#### Docker Compose Configuration
+```yaml
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=attendance_db
+
+  backend:
+    build: ./server
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/attendance_db
+
+  frontend:
+    build: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+```
+
+---
+
+## 🔐 OTP Verification Feature
+
+### Email OTP Verification
+The application implements **OTP (One-Time Password) verification** via email for enhanced security.
+
+#### Implementation Details:
+- **Service**: EmailJS for email delivery
+- **Frontend**: React handles OTP sending and verification
+- **Security**: Time-limited OTP codes sent to user email
+
+#### Environment Variables Required (client/.env)
+```env
+# EmailJS Configuration
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+#### How It Works:
+1. User initiates action requiring OTP
+2. EmailJS sends OTP code to user's email
+3. User receives OTP in inbox
+4. User enters OTP in verification modal
+5. OTP is validated and action is completed
+
+#### EmailJS Setup:
+1. Create account at [EmailJS](https://www.emailjs.com)
+2. Create email service
+3. Create email template
+4. Get Service ID, Template ID, and Public Key
+5. Add to frontend `.env` file
+
+---
 
 ### Backend Environment Variables (server/.env)
 
@@ -271,6 +358,15 @@ CLIENT_URL=http://localhost:5173
 ```env
 # API Configuration
 VITE_API_URL=http://localhost:5000/api
+
+# EmailJS Configuration (OTP Verification)
+VITE_EMAILJS_SERVICE_ID=service_xxxxx
+VITE_EMAILJS_TEMPLATE_ID=template_xxxxx
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+
+# Auth Keys
+VITE_EMPLOYEE_KEY=employ@UCUBE
+VITE_ADMIN_KEY=admin@UCUBE
 ```
 
 ### Environment Variables Description:
@@ -284,6 +380,11 @@ VITE_API_URL=http://localhost:5000/api
 | `NODE_ENV` | Environment type | `development`, `production` |
 | `CLIENT_URL` | Frontend URL for CORS | `http://localhost:5173` |
 | `VITE_API_URL` | Backend API endpoint | `http://localhost:5000/api` |
+| `VITE_EMAILJS_SERVICE_ID` | EmailJS service ID for OTP | `service_xxxxx` |
+| `VITE_EMAILJS_TEMPLATE_ID` | EmailJS template ID for emails | `template_xxxxx` |
+| `VITE_EMAILJS_PUBLIC_KEY` | EmailJS public key | `your_public_key` |
+| `VITE_EMPLOYEE_KEY` | Employee registration key | `employ@UCUBE` |
+| `VITE_ADMIN_KEY` | Admin registration key | `admin@UCUBE` |
 
 ---
 
@@ -425,6 +526,15 @@ npm run dev
 ```
 Frontend runs on `http://localhost:5173`
 
+### Using Docker Compose
+```bash
+# From root directory
+docker-compose up --build
+```
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:5000`
+- MongoDB: `localhost:27017`
+
 ### Production Build
 
 #### Build Frontend
@@ -465,11 +575,13 @@ npm start
 ### General Features
 - ✅ **Authentication**: Secure JWT-based authentication
 - ✅ **Role-Based Access**: Employee and Admin roles
+- ✅ **OTP Verification**: Email-based OTP for security
 - ✅ **Input Validation**: Zod schema validation
 - ✅ **Error Handling**: Comprehensive error messages
 - ✅ **Responsive Design**: Works on all devices
 - ✅ **Notifications**: Toast notifications for user feedback
 - ✅ **Dark Mode Support**: Dark theme compatibility
+- ✅ **Docker Support**: Containerized deployment
 
 ---
 

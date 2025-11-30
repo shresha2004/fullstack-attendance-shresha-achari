@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
   //For local machine and Docker
-  //baseURL: 'http://localhost:5000/api'
+  baseURL: 'http://localhost:5000/api'
 
   //Deployed backend URL
- baseURL: 'https://fullstack-attendance-shresha-achari-tawny.vercel.app/api'
+//  baseURL: 'https://fullstack-attendance-shresha-achari-tawny.vercel.app/api'
 });
 
 api.interceptors.request.use((config) => {

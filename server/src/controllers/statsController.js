@@ -76,24 +76,39 @@ export const getEmployeeStats = async (req, res) => {
 };
 
 export const getAdminStats = async (req, res) => {
-  const today = getStartOfDay(new Date());
+  try {
+    const today = getStartOfDay(new Date());
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-  const allEmployees = await User.find({ role: 'employee' }).select('_id email');
+    const allEmployees = await User.find({ role: 'employee' }).select('_id name email employeeId');
 
-  const todaysAttendance = await Attendance.find({
-    date: today,
-    clockInTime: { $exists: true }
-  }).select('user');
+    const todaysAttendance = await Attendance.find({
+      date: { $gte: today, $lt: tomorrow },
+      clockInTime: { $exists: true, $ne: null }
+    }).select('user');
 
-  const presentIds = new Set(todaysAttendance.map((a) => String(a.user)));
+    const presentIds = new Set(todaysAttendance.map((a) => String(a.user)));
 
-  const absentToday = allEmployees.filter((e) => !presentIds.has(String(e._id)));
+    const absentToday = allEmployees.filter((e) => !presentIds.has(String(e._id)));
 
-  // pending leaves count
-  const pendingLeavesCount = await Leave.countDocuments({ status: 'Pending' });
+    // pending leaves count
+    const pendingLeavesCount = await Leave.countDocuments({ status: 'Pending' });
 
-  res.json({
-    absentToday,
-    pendingLeavesCount
-  });
+    console.log('Debug Info:');
+    console.log('Today:', today);
+    console.log('Tomorrow:', tomorrow);
+    console.log('Total Employees:', allEmployees.length);
+    console.log('Present Count:', presentIds.size);
+    console.log('Absent Count:', absentToday.length);
+    console.log('Absent Employees:', absentToday);
+
+    res.json({
+      absentToday,
+      pendingLeavesCount
+    });
+  } catch (error) {
+    console.error('Error in getAdminStats:', error);
+    res.status(500).json({ message: error.message });
+  }
 };
