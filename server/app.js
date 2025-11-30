@@ -22,15 +22,9 @@ const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
 const corsOptions = {
-  //Frontend (Deployed URL)
+ 
    origin: 'https://fullstack-attendance-shresha-achari.vercel.app',
 
-
-   //For local machine
-  //origin: 'http://localhost:5173',
-
-  //Docker URL
- // origin: 'http://localhost:3000',
   credentials: true
 };
 
