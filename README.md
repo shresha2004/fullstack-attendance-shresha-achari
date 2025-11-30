@@ -34,7 +34,6 @@ Below is the  architecture of the UCUBE.AI Attendance System:
 - **Backend**: Express.js API server running on port 5000
 - **Database**: MongoDB Atlas for data persistence
 - **Authentication**: JWT (JSON Web Tokens)
-- **Real-time**: Socket.io ready infrastructure
 
 ---
 
@@ -43,7 +42,8 @@ Below is the  architecture of the UCUBE.AI Attendance System:
 ### Entity Relationship Diagram
 
 
-![WhatsApp Image 2025-11-29 at 21 01 31_f47f28c2](https://github.com/user-attachments/assets/050b3039-b2bc-4e1a-bd54-f9f1fcbde94e)
+![WhatsApp Image 2025-11-29 at 21 01 31_5adbc3dc](https://github.com/user-attachments/assets/b9e00821-b648-40b5-8013-1b2cdf6b27d4)
+
 
 
 ## Deployed link
