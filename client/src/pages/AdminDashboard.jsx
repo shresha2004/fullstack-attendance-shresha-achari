@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { toLocalDateString, toLocalTimeString } from '../utils/dateUtils';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -47,32 +48,69 @@ const AdminDashboard = () => {
     fetchStats();
   }, []);
 
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const element = vantaRef.current || document.querySelector('.fixed.inset-0.z-0');
+    const initVanta = () => {
+      if (!vantaRef.current) return;
       
-      if (element && typeof window.VANTA !== 'undefined' && window.VANTA.BIRDS) {
-        try {
-          window.VANTA.BIRDS({
-            el: element,
-            mouseControls: true,
-            touchControls: true,
-            gyroControls: false,
-            minHeight: 200,
-            minWidth: 200,
-            scale: 1,
-            scaleMobile: 1,
-            backgroundColor: 0xffffff,
-            color: 0x1e3a8a,
-            colorSecondary: 0x3b82f6
-          });
-        } catch (error) {
-          // Vanta initialization failed
+      try {
+        // Clear any existing Vanta instance
+        if (vantaRef.current.vantaInstance) {
+          vantaRef.current.vantaInstance.destroy();
         }
+        
+        // Initialize Vanta Birds
+        const effect = window.VANTA.BIRDS({
+          el: vantaRef.current,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200,
+          minWidth: 200,
+          scale: 1,
+          scaleMobile: 1,
+          backgroundColor: 0xffffff,
+          color: 0x1e3a8a,
+          colorSecondary: 0x3b82f6,
+          quantity: 4
+        });
+        
+        // Store instance for cleanup
+        if (vantaRef.current) {
+          vantaRef.current.vantaInstance = effect;
+        }
+      } catch (error) {
+        console.warn('Vanta BIRDS initialization failed:', error);
       }
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    };
+
+    // Try immediate initialization
+    if (window.VantaReady && window.VANTA && window.VANTA.BIRDS) {
+      initVanta();
+    } else if (window.VantaReady) {
+      // Wait for vantaReady event
+      const handleVantaReady = () => {
+        initVanta();
+      };
+      document.addEventListener('vantaReady', handleVantaReady);
+      return () => document.removeEventListener('vantaReady', handleVantaReady);
+    } else {
+      // Fallback: check periodically
+      const checkVanta = setInterval(() => {
+        if (window.VANTA && window.VANTA.BIRDS) {
+          clearInterval(checkVanta);
+          initVanta();
+        }
+      }, 100);
+      
+      return () => {
+        clearInterval(checkVanta);
+        // Cleanup on unmount
+        if (vantaRef.current && vantaRef.current.vantaInstance) {
+          vantaRef.current.vantaInstance.destroy();
+        }
+      };
+    }
   }, []);
 
   const updateLeaveStatus = async (id, status) => {
@@ -129,13 +167,13 @@ const AdminDashboard = () => {
                     <div className="mb-3">
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <p className="font-semibold text-gray-900">{l.user?.name || l.user?.email}</p>
-                          <p className="text-sm text-gray-600">{l.user?.email}</p>
+                          <p className="font-semibold text-gray-900 break-all">{l.user?.name || l.user?.email}</p>
+                          <p className="text-sm text-gray-600 break-all">{l.user?.email}</p>
                           <p className="text-xs text-gray-500 mt-1">ID: {l.user?.employeeId}</p>
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 mb-2">
-                        <span className="font-medium">{new Date(l.startDate).toDateString()}</span> to <span className="font-medium">{new Date(l.endDate).toDateString()}</span>
+                        <span className="font-medium">{toLocalDateString(l.startDate)}</span> to <span className="font-medium">{toLocalDateString(l.endDate)}</span>
                         <span className="text-gray-500 ml-2">({Math.ceil((new Date(l.endDate) - new Date(l.startDate)) / (1000 * 60 * 60 * 24)) + 1} days)</span>
                       </p>
                       <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">{l.reason}</p>
@@ -187,7 +225,7 @@ const AdminDashboard = () => {
         {/* Profile Card */}
         {user && (
           <div className="mb-8 p-6 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <h3 className="text-sm text-gray-600 font-medium mb-2">Admin ID</h3>
                 <p className="text-2xl font-bold text-red-700">{user.employeeId}</p>
@@ -198,28 +236,21 @@ const AdminDashboard = () => {
                 <p className="text-lg text-gray-800">{user.name}</p>
               </div>
 
-              <div>
-                <h3 className="text-sm text-gray-600 font-medium mb-2">Email</h3>
-                <p className="text-lg text-gray-800">{user.email}</p>
+              <div className="flex flex-col md:flex-row md:col-span-2 gap-4">
+                <div className="flex-1">
+                  <h3 className="text-sm text-gray-600 font-medium mb-2">Email</h3>
+                  <p className="text-lg text-gray-800 break-all">{user.email}</p>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm text-gray-600 font-medium mb-2">Role</h3>
+                  <p className="text-lg font-semibold">
+                    <span className="px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
+                      Administrator
+                    </span>
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <h3 className="text-sm text-gray-600 font-medium mb-2">Role</h3>
-                <p className="text-lg font-semibold">
-                  <span className="px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
-                    Administrator
-                  </span>
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-sm text-gray-600 font-medium mb-2">Status</h3>
-                <p className="text-lg font-semibold">
-                  <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">
-                    Active
-                  </span>
-                </p>
-              </div>
             </div>
           </div>
         )}
@@ -295,8 +326,8 @@ const AdminDashboard = () => {
                 <div key={e._id} className="p-4 border border-red-200 rounded-xl bg-red-50 hover:shadow-md transition">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-semibold text-gray-900">{e.name || e.email}</p>
-                      <p className="text-sm text-gray-600">{e.email}</p>
+                      <p className="font-semibold text-gray-900 break-all">{e.name || e.email}</p>
+                      <p className="text-sm text-gray-600 break-all">{e.email}</p>
                       <p className="text-xs text-gray-500 mt-1">ID: {e.employeeId}</p>
                     </div>
                     <span className="px-3 py-1 bg-red-200 text-red-700 rounded-full text-xs font-semibold">

@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: uCube_client
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    env_file:
+      - ./client/.env
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: uCube_server
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    env_file:
+      - ./server/.env

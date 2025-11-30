@@ -57,34 +57,67 @@ const EmployeeDashboard = () => {
   }, [fetchStatsLogsAndLeaves]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const element = vantaRef.current || document.querySelector('.fixed.inset-0.-z-10');
+    const initVanta = () => {
+      if (!vantaRef.current) return;
       
-      if (element && typeof window.VANTA !== 'undefined' && window.VANTA.BIRDS) {
-        try {
-          window.VANTA.BIRDS({
-            el: vantaRef.current,
-            mouseControls: true,
-            touchControls: true,
-            gyroControls: false,
-            minHeight: 200,
-            minWidth: 200,
-            scale: 1,
-            scaleMobile: 1,
-            backgroundColor: 0xf8f9fa,
-            color1: 0x2563eb,
-            color2: 0x1e40af,
-            birdSize: 1.5,
-            wingSpan: 30,
-            quantity: 5
-          });
-        } catch (error) {
-          // Vanta initialization failed
+      try {
+        // Clear any existing Vanta instance
+        if (vantaRef.current.vantaInstance) {
+          vantaRef.current.vantaInstance.destroy();
         }
+        
+        // Initialize Vanta Birds
+        const effect = window.VANTA.BIRDS({
+          el: vantaRef.current,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200,
+          minWidth: 200,
+          scale: 1,
+          scaleMobile: 1,
+          backgroundColor: 0xf8f9fa,
+          color: 0x2563eb,
+          colorSecondary: 0x1e40af,
+          quantity: 4
+        });
+        
+        // Store instance for cleanup
+        if (vantaRef.current) {
+          vantaRef.current.vantaInstance = effect;
+        }
+      } catch (error) {
+        console.warn('Vanta BIRDS initialization failed:', error);
       }
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    };
+
+    // Try immediate initialization
+    if (window.VantaReady && window.VANTA && window.VANTA.BIRDS) {
+      initVanta();
+    } else if (window.VantaReady) {
+      // Wait for vantaReady event
+      const handleVantaReady = () => {
+        initVanta();
+      };
+      document.addEventListener('vantaReady', handleVantaReady);
+      return () => document.removeEventListener('vantaReady', handleVantaReady);
+    } else {
+      // Fallback: check periodically
+      const checkVanta = setInterval(() => {
+        if (window.VANTA && window.VANTA.BIRDS) {
+          clearInterval(checkVanta);
+          initVanta();
+        }
+      }, 100);
+      
+      return () => {
+        clearInterval(checkVanta);
+        // Cleanup on unmount
+        if (vantaRef.current && vantaRef.current.vantaInstance) {
+          vantaRef.current.vantaInstance.destroy();
+        }
+      };
+    }
   }, []);
 
   const todayOpen = logs.find((l) => {

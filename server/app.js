@@ -17,13 +17,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000 ;
 const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
 const corsOptions = {
-origin: 'https://fullstack-attendance-shresha-achari.vercel.app',
-//  origin: 'http://localhost:5173',
+  //Frontend (Deployed URL)
+   origin: 'https://fullstack-attendance-shresha-achari.vercel.app',
+
+
+   //For local machine
+  //origin: 'http://localhost:5173',
+
+  //Docker URL
+ // origin: 'http://localhost:3000',
   credentials: true
 };
 
@@ -85,7 +92,7 @@ app.use(errorHandler);
 
 // Start server (for local development)
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
+  app.listen(PORT,"0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
   });
 }
